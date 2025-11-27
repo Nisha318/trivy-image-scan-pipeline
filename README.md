@@ -2,17 +2,17 @@
 
 This project builds a container image for a small Python application and scans it with Trivy during the CI process. The workflow generates a vulnerability report and enforces a security gate by failing the pipeline when High and Critical findings exceed a defined limit. An HTML report is uploaded as an artifact to support review and documentation.
 
-/assets/images/devsecops/container_image-scanning_trivy.png
+![Container Scanning Diagram](/assets/images/devsecops/container_image-scanning_trivy.png)
 
 ## Features
 
-- Automated Docker image build 
-- Trivy scan integrated directly into GitHub Actions
+- Automated Docker image build  
+- Trivy scan integrated directly into GitHub Actions  
 - Threshold gate for High and Critical vulnerabilities  
-- Sample containerized application included for testing and demonstration
-- Optional workflows for SBOM and static analysis
+- Sample containerized application included for testing and demonstration  
+- Optional workflows for SBOM and static analysis  
 
-## Repository structure
+## Repository Structure
 
 ```text
 app/
@@ -27,7 +27,6 @@ Dockerfile
 reports/
   sample-report.html     (optional)
 README.md
-
 ```
 
 ## How the Workflow Operates
@@ -85,6 +84,18 @@ These scenarios demonstrate how the severity gate is used to enforce security ex
 - HTML report shows the triggering finding
 
 These examples show how the gate helps prevent unsafe images from proceeding further into a CI/CD pipeline.
+
+## Optional: SBOM and SAST Workflows
+
+In addition to image scanning, this repository includes optional workflows for SBOM generation and static analysis. These jobs produce artifacts that support supply chain visibility and code review, without blocking the main build.
+
+### SBOM Generation (Syft)
+
+The SBOM workflow uses Syft to generate an SPDX JSON SBOM from the repository source and uploads it as an artifact. This job provides an inventory of components that can be used for vulnerability management and compliance documentation.
+
+### SAST Scan (Semgrep)
+
+The SAST workflow runs Semgrep against the Python application and saves a SARIF report. The job is configured as non-blocking so that findings are recorded but do not fail the pipeline.  This job demonstrates static analysis integration in CI and produces artifacts that can be viewed in supporting tools or used during reviews.
 
 ## Why This Project Matters
 
