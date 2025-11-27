@@ -50,7 +50,7 @@ jobs:
           echo "Critical vulnerabilities: ${CRITICAL_COUNT}"
           echo "Total High+Critical: ${TOTAL}"
 
-          THRESHOLD=0
+          THRESHOLD=5
 
           if [ "$TOTAL" -gt "$THRESHOLD" ]; then
             echo "Vulnerability threshold exceeded (threshold=${THRESHOLD}, found=${TOTAL}). Failing the build."

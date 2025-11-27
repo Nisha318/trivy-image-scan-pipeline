@@ -1,0 +1,20 @@
+name: sbom-generation
+
+on: push
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate SBOM
+        uses: anchore/syft-action@v1
+        with:
+          output: sbom.spdx
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-report
+          path: sbom.spdx
