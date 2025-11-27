@@ -1,12 +1,30 @@
 # Container Image Scanning Pipeline with Trivy and GitHub Actions
-![CI Status](https://github.com/Nisha318/trivy-image-scan-pipelineactions/workflows/trivy-image-scan.yml/badge.svg)
+![CI Status](https://github.com/Nisha318/trivy-image-scan-pipeline/actions/workflows/trivy-image-scan.yml/badge.svg)
 ![SBOM](https://img.shields.io/badge/SBOM-Syft-blue)
 ![SAST](https://img.shields.io/badge/SAST-Semgrep-green)
 ![Container Security](https://img.shields.io/badge/Trivy-Scanning-orange)
 
-This project builds a container image for a small Python application and scans it with Trivy during the CI process. The workflow generates a vulnerability report and enforces a security gate by failing the pipeline when High and Critical findings exceed a defined limit. An HTML report is uploaded as an artifact to support review and documentation.
+This project demonstrates a security-focused CI workflow that scans container images during the build process using Trivy, enforces a vulnerability threshold, and generates reviewable artifacts such as HTML reports, SBOMs, and SAST findings. It shows how automated controls can identify risks early, prevent unsafe images from progressing, and increase visibility into the software supply chain.
 
-![Container Scanning Diagram](/assets/images/devsecops/container_image-scanning_trivy.png)
+![Container Scanning Banner](/assets/images/devsecops/container_image-scanning_trivy.png)
+
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Repository Structure](#repository-structure)
+- [How the Workflow Operates](#how-the-workflow-operates)
+- [CI Workflow Diagram](#ci-workflow-diagram)
+- [Testing the Vulnerability Gate](#testing-the-vulnerability-gate)
+- [Before and After Examples](#before-and-after-examples)
+- [Optional: SBOM and SAST Workflows](#optional-sbom-and-sast-workflows)
+- [Why This Project Matters](#why-this-project-matters)
+- [RMF Control Mapping](#rmf-control-mapping)
+- [Evidence Folder](#evidence-folder)
+- [Future Enhancements](#future-enhancements)
+
+## Overview
+
+This repository demonstrates a DevSecOps-aligned CI workflow that scans container images for vulnerabilities, enforces security thresholds, and produces artifacts such as HTML reports, SBOMs, and SARIF static analysis results.
 
 ## Features
 
@@ -15,56 +33,6 @@ This project builds a container image for a small Python application and scans i
 - Threshold gate for High and Critical vulnerabilities  
 - Sample containerized application included for testing and demonstration  
 - Optional workflows for SBOM and static analysis  
-
-## Diagram
-
-            Developer Commit
-                   |
-                   v
-          GitHub Actions CI
-                   |
-     --------------------------------
-     |              |               |
- Container Build   SBOM Scan      SAST Scan
-   (Docker)        (Syft)        (Semgrep)
-     |              |               |
-     -------------------------------
-                   |
-               Trivy Scan
-                   |
-             Vulnerability Gate
-        (Fail if High or Critical > threshold)
-                   |
-                   v
-             Build Artifacts
-         (HTML report, SBOM, SARIF)
-                   |
-                   v
-               Secure Deploy
-
-
-flowchart TD
-
-A[Code Push or Pull Request] --> B[GitHub Actions Workflow Starts]
-
-B --> C[Build Docker Image]
-C --> D[Trivy Image Scan (JSON)]
-
-D --> E{High + Critical > Threshold?}
-E -->|Yes| F[Fail Pipeline]
-E -->|No| G[Pass Pipeline]
-
-D --> H[Generate HTML Report]
-H --> I[Upload Report Artifact]
-
-B --> J[Syft SBOM Generation]
-B --> K[Semgrep SAST Scan]
-
-J --> I
-K --> I
-
-G --> L[Ready for Deployment]
-
 
 
 ## Repository Structure
@@ -101,6 +69,31 @@ The pipeline fails if the count exceeds the configured threshold.
 The JSON report is converted to HTML and uploaded as an artifact.
 
 This represents a simple CI control that prevents vulnerable images from advancing through the build pipeline.
+
+## CI Workflow Diagram
+```mermaid
+flowchart TD
+
+    A[Code Push or Pull Request] --> B[GitHub Actions Workflow Starts]
+
+    B --> C[Build Docker Image]
+    C --> D[Trivy Image Scan (JSON)]
+
+    D --> E{High + Critical > Threshold?}
+    E -->|Yes| F[Fail Pipeline]
+    E -->|No| G[Pass Pipeline]
+
+    D --> H[Generate HTML Report]
+    H --> I[Upload Report Artifact]
+
+    B --> J[Syft SBOM Generation]
+    B --> K[Semgrep SAST Scan]
+
+    J --> I
+    K --> I
+
+    G --> L[Ready for Deployment]
+    ```
 
 ## Testing the Vulnerability Gate
 
@@ -163,6 +156,24 @@ This workflow supports:
 - Simple integration with CI processes
 
 It reinforces the ability to secure containerized workloads using common DevSecOps practices.
+
+## RMF Control Mapping
+
+The security checks performed in this pipeline align with several NIST SP 800-53 controls that address supply chain security, vulnerability management, and continuous monitoring.
+
+| Control | Control Name | How This Project Supports It |
+|--------|--------------|------------------------------|
+| RA-5 | Vulnerability Monitoring and Scanning | Trivy performs automated vulnerability scans of container images during CI, identifying known CVEs before deployment. |
+| SI-2 | Flaw Remediation | The gating logic prevents images with excessive High or Critical vulnerabilities from passing, forcing remediation before promotion. |
+| SA-11 | Developer Testing and Evaluation | SBOM generation and SAST scanning support secure development practices and evaluation during the build process. |
+| SA-11(1) | Static Code Analysis | Semgrep performs static analysis to detect insecure coding patterns within the application code. |
+| SA-15 | Development Process, Standards, and Tools | By integrating scanning tools into CI/CD, this project demonstrates secure development toolchain controls. |
+| PM-30 | Supply Chain Risk Management | SBOM creation and artifact capture increase transparency into dependencies and image contents. |
+| SI-7 | Software, Firmware, and Information Integrity | The workflow detects unauthorized or vulnerable components within the image, protecting integrity. |
+| CM-2 | Baseline Configuration | The Dockerfile and container build steps enforce a consistent, repeatable baseline configuration. |
+| CM-3 | Configuration Change Control | Every image build is versioned through GitHub Actions, allowing traceability of changes. |
+| CA-7 | Continuous Monitoring | Pipeline-based scanning represents ongoing automated monitoring of security posture. |
+
 
 ## Future Enhancements
 - Add automated remediation suggestions
