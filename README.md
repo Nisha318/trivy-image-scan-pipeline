@@ -6,7 +6,7 @@
 
 This project demonstrates a security-focused CI workflow that scans container images during the build process using Trivy, enforces a vulnerability threshold, and generates reviewable artifacts such as HTML reports, SBOMs, and SAST findings. It shows how automated controls can identify risks early, prevent unsafe images from progressing, and increase visibility into the software supply chain.
 
-![Container Scanning Banner](/assets/images/devsecops/container_image-scanning_trivy.png)
+<img src="https://github.com/Nisha318/Nisha318.github.io/blob/master/assets/images/devsecops/container_image-scanning_trivy.png">
 
 ## Table of Contents
 - [Overview](#overview)
@@ -94,6 +94,8 @@ flowchart TD
 
     G --> L[Ready for Deployment]
     ```
+
+    
 
 ## Testing the Vulnerability Gate
 
