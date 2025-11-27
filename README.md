@@ -1,4 +1,8 @@
 # Container Image Scanning Pipeline with Trivy and GitHub Actions
+![CI Status](https://github.com/Nisha318/trivy-image-scan-pipelineactions/workflows/trivy-image-scan.yml/badge.svg)
+![SBOM](https://img.shields.io/badge/SBOM-Syft-blue)
+![SAST](https://img.shields.io/badge/SAST-Semgrep-green)
+![Container Security](https://img.shields.io/badge/Trivy-Scanning-orange)
 
 This project builds a container image for a small Python application and scans it with Trivy during the CI process. The workflow generates a vulnerability report and enforces a security gate by failing the pipeline when High and Critical findings exceed a defined limit. An HTML report is uploaded as an artifact to support review and documentation.
 
@@ -11,6 +15,57 @@ This project builds a container image for a small Python application and scans i
 - Threshold gate for High and Critical vulnerabilities  
 - Sample containerized application included for testing and demonstration  
 - Optional workflows for SBOM and static analysis  
+
+## Diagram
+
+            Developer Commit
+                   |
+                   v
+          GitHub Actions CI
+                   |
+     --------------------------------
+     |              |               |
+ Container Build   SBOM Scan      SAST Scan
+   (Docker)        (Syft)        (Semgrep)
+     |              |               |
+     -------------------------------
+                   |
+               Trivy Scan
+                   |
+             Vulnerability Gate
+        (Fail if High or Critical > threshold)
+                   |
+                   v
+             Build Artifacts
+         (HTML report, SBOM, SARIF)
+                   |
+                   v
+               Secure Deploy
+
+
+flowchart TD
+
+A[Code Push or Pull Request] --> B[GitHub Actions Workflow Starts]
+
+B --> C[Build Docker Image]
+C --> D[Trivy Image Scan (JSON)]
+
+D --> E{High + Critical > Threshold?}
+E -->|Yes| F[Fail Pipeline]
+E -->|No| G[Pass Pipeline]
+
+D --> H[Generate HTML Report]
+H --> I[Upload Report Artifact]
+
+B --> J[Syft SBOM Generation]
+B --> K[Semgrep SAST Scan]
+
+J --> I
+K --> I
+
+G --> L[Ready for Deployment]
+
+
 
 ## Repository Structure
 
